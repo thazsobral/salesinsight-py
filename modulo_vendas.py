@@ -69,3 +69,63 @@ def inspecionar_dados(dados):
     if dados:
         print(f"Campos disponíveis: {list(dados[0].keys())}")
         print(f"Exemplo do primeiro registro: {dados[0]}")
+
+def limpar_dados(dados_brutos):
+    """
+    Remove espacos extras, descarta registros incompletos ou invalidos 
+    e realiza a conversao explicita dos tipos de dados.
+    """
+    dados_limpos = []
+    removidos = 0
+
+    for lin in dados_brutos:
+        # Tratamento de espacos extras em strings
+        prod = lin["produto"].strip()
+        cat = lin["categoria"].strip()
+        reg = lin["regiao"].strip()
+        cli = lin["cliente"].strip()
+
+        # Validacao de registros com valores vazios ou ausentes
+        if not lin["quantidade"] or not lin["preco_unitario"]:
+            removidos += 1
+            continue
+
+        # Conversao explicita dos tipos numericos
+        try:
+            qtd = int(lin["quantidade"])
+            preco = float(lin["preco_unitario"])
+            
+            dados_limpos.append({
+                "id_venda": int(lin["id_venda"]),
+                "data_venda": lin["data_venda"].strip(),
+                "cliente": cli,
+                "produto": prod,
+                "categoria": cat,
+                "regiao": reg,
+                "quantidade": qtd,
+                "preco_unitario": preco
+            })
+        except ValueError:
+            removidos += 1
+
+    print("\n=== RELATÓRIO DE LIMPEZA ===")
+    print(f"Registros Válidos: {len(dados_limpos)} | Registros Removidos: {removidos}")
+    return dados_limpos
+
+
+def criar_campos_derivados(dados):
+    """
+    Calcula a receita total de cada item e classifica o registro por faixa de preco.
+    """
+    for item in dados:
+        receita = round(item["quantidade"] * item["preco_unitario"], 2)
+        item["receita_total"] = receita
+        
+        if receita < 500:
+            item["faixa_preco"] = "Baixo"
+        elif receita <= 2000:
+            item["faixa_preco"] = "Médio"
+        else:
+            item["faixa_preco"] = "Alto"
+            
+    return dados

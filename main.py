@@ -18,5 +18,17 @@ def main():
     # 3. Inspeção inicial
     mv.inspecionar_dados(dados_brutos)
 
+    # 4. Limpeza dos dados
+    dados_limpos = mv.limpar_dados(dados_brutos)
+
+    # 5. Transformação dos dados
+    dados_transformados = mv.criar_campos_derivados(dados_limpos)
+
+    # Exibir os dados transformados
+    if dados_transformados:
+        print("\nDados transformados (exemplo):")
+        for registro in dados_transformados[:5]:  # Exibir apenas os primeiros 5 registros
+            print(registro)
+
 if __name__ == "__main__":
     main()
