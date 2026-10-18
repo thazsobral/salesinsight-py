@@ -112,6 +112,12 @@ def limpar_dados(dados_brutos):
     print(f"Registros Válidos: {len(dados_limpos)} | Registros Removidos: {removidos}")
     return dados_limpos
 
+def processar_transformacao(dados, funcao_transformacao):
+    """
+    Aplica uma funcao de ordem superior em cada registro do dataset.
+    """
+    return [funcao_transformacao(item) for item in dados]
+
 
 def criar_campos_derivados(dados):
     """

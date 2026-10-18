@@ -14,40 +14,43 @@ def main():
 
     # 2. Leitura dos dados
     dados_brutos = mv.carregar_csv(arquivo_dados)
-    
-    # 3. Inspeção inicial
     mv.inspecionar_dados(dados_brutos)
 
-    # 4. Limpeza dos dados
+    # 3. Limpeza e Transformação
     dados_limpos = mv.limpar_dados(dados_brutos)
-
-    # 5. Transformação dos dados
     dados_transformados = mv.criar_campos_derivados(dados_limpos)
 
-    # Exibir os dados transformados
-    if dados_transformados:
-        print("\nDados transformados (exemplo):")
-        for registro in dados_transformados[:5]:  # Exibir apenas os primeiros 5 registros
-            print(registro)
+    # 4. Uso de Função de Ordem Superior (Lambda)
+    dados_com_tag = mv.processar_transformacao(
+        dados_transformados, 
+        lambda x: {**x, "processado": True}
+    )
 
-    # 6. Cálculo de métricas e segmentação
-    metricas = mv.calcular_metricas(dados_transformados)
-
-    # 7. Segmentação de clientes e obtenção dos top clientes
-    segmentos = mv.segmentar_clientes(dados_transformados)
-
-    # 8. Obter os top clientes
+    # 5. Métricas e Segmentação
+    metricas = mv.calcular_metricas(dados_com_tag)
+    segmentos = mv.segmentar_clientes(dados_com_tag)
     top_clientes = mv.obter_top_clientes(segmentos, top_n=5)
 
-    print("\n=== RESUMO EXECUTIVO (PRÉVIA) ===")
+    # 6. Exibição de Resultados no Terminal
+    print("\n=== RESUMO EXECUTIVO ===")
     print(f"Receita Total da Empresa: R$ {metricas['total_geral']:,.2f}")
+    
     print("\nReceita por Categoria:")
     for cat, rec in metricas["por_categoria"].items():
         print(f"  - {cat}: R$ {rec:,.2f}")
 
-    print("\nTop 5 Clientes:")
+    print("\nReceita por Região:")
+    for reg, rec in metricas["por_regiao"].items():
+        print(f"  - {reg}: R$ {rec:,.2f}")
+
+    print("\nTop 5 Clientes Ouro/Prata:")
     for cli, info in top_clientes:
         print(f"  - {cli}: R$ {info['total_gasto']:,.2f} ({info['segmento']})")
+
+    # 7. Exportação dos Arquivos
+    # mv.exportar_resultados(metricas, segmentos)
+
+    print("\n[CONCLUÍDO] Pipeline executado com sucesso!")
 
 if __name__ == "__main__":
     main()
