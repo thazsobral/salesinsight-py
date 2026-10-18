@@ -48,7 +48,7 @@ def main():
         print(f"  - {cli}: R$ {info['total_gasto']:,.2f} ({info['segmento']})")
 
     # 7. Exportação dos Arquivos
-    # mv.exportar_resultados(metricas, segmentos)
+    mv.exportar_resultados(metricas, segmentos)
 
     print("\n[CONCLUÍDO] Pipeline executado com sucesso!")
 

@@ -1,4 +1,6 @@
 import csv
+import json
+import os
 import random
 
 def gerar_dataset_sintetico(caminho_arquivo="vendas.csv", n_registros=100, seed=42):
@@ -194,3 +196,29 @@ def obter_top_clientes(segmentos, top_n=5):
         reverse=True
     )
     return clientes_ordenados[:top_n]
+
+def exportar_resultados(metricas, clientes, pasta_saida="outputs"):
+    """
+    Exporta as metricas agregadas e a segmentacao de clientes em arquivos JSON e CSV.
+    """
+    os.makedirs(pasta_saida, exist_ok=True)
+    
+    # 1. Exportar JSON com relatorio estatistico consolidado
+    caminho_json = os.path.join(pasta_saida, "estatisticas.json")
+    dados_json = {
+        "metricas_gerais": metricas,
+        "clientes": clientes
+    }
+    
+    with open(caminho_json, "w", encoding="utf-8") as f:
+        json.dump(dados_json, f, indent=4, ensure_ascii=False)
+    print(f"[OK] Arquivo JSON exportado em: {caminho_json}")
+
+    # 2. Exportar CSV com resumo por categoria
+    caminho_csv = os.path.join(pasta_saida, "metricas_resumo.csv")
+    with open(caminho_csv, "w", newline="", encoding="utf-8") as f:
+        escritor = csv.writer(f)
+        escritor.writerow(["Categoria", "Receita Total"])
+        for cat, rec in metricas["por_categoria"].items():
+            escritor.writerow([cat, rec])
+    print(f"[OK] Arquivo CSV exportado em: {caminho_csv}")
