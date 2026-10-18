@@ -48,7 +48,6 @@ def main():
     print("\nTop 5 Clientes:")
     for cli, info in top_clientes:
         print(f"  - {cli}: R$ {info['total_gasto']:,.2f} ({info['segmento']})")
-    
 
 if __name__ == "__main__":
     main()
