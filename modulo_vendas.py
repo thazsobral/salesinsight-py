@@ -129,3 +129,62 @@ def criar_campos_derivados(dados):
             item["faixa_preco"] = "Alto"
             
     return dados
+
+def calcular_metricas(dados):
+    """
+    Processa o conjunto de dados calculando a receita total por categoria,
+    por regiao e o faturamento global da empresa.
+    """
+    receita_categoria = {}
+    receita_regiao = {}
+    total_geral = 0.0
+
+    for item in dados:
+        cat = item["categoria"]
+        reg = item["regiao"]
+        rec = item["receita_total"]
+
+        # Agregação via dicionários usando .get() para valor padrão 0.0
+        receita_categoria[cat] = round(receita_categoria.get(cat, 0.0) + rec, 2)
+        receita_regiao[reg] = round(receita_regiao.get(reg, 0.0) + rec, 2)
+        total_geral += rec
+
+    return {
+        "total_geral": round(total_geral, 2),
+        "por_categoria": receita_categoria,
+        "por_regiao": receita_regiao
+    }
+
+
+def segmentar_clientes(dados):
+    """
+    Calcula o total acumulado por cliente e classifica em faixas (Bronze, Prata, Ouro).
+    """
+    gastos_cliente = {}
+    for item in dados:
+        cli = item["cliente"]
+        gastos_cliente[cli] = gastos_cliente.get(cli, 0.0) + item["receita_total"]
+
+    segmentos = {}
+    for cli, total in gastos_cliente.items():
+        if total > 8000:
+            cat = "Ouro"
+        elif total >= 3000:
+            cat = "Prata"
+        else:
+            cat = "Bronze"
+        segmentos[cli] = {"total_gasto": round(total, 2), "segmento": cat}
+
+    return segmentos
+
+
+def obter_top_clientes(segmentos, top_n=5):
+    """
+    Retorna os top N clientes ordenados pelo maior valor acumulado em compras.
+    """
+    clientes_ordenados = sorted(
+        segmentos.items(),
+        key=lambda item: item[1]["total_gasto"],
+        reverse=True
+    )
+    return clientes_ordenados[:top_n]
